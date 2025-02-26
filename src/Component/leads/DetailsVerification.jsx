@@ -66,6 +66,8 @@ const VerifyContactDetails = ({
     const [sendAadhaarLink, aadhaarRes] = useLazyGenerateAadhaarLinkQuery();
     const [getPanDetails, panRes] = useLazyGetPanDetailsQuery();
 
+    console.log(aadhaarDetails);
+
     const handleMobileVerification = () => {
         // Logic for mobile verification
         setMobileVerified(true);
