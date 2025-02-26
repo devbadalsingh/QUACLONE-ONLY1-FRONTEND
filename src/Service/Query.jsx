@@ -255,4 +255,7 @@ export const {
     useGetTotalRecordsForSupervisorQuery,
     useLazyGenerateAadhaarLinkQuery,
     useLazyCheckDetailsQuery,
+    useLazyGetBanksQuery
 } = leadsApi;
+
+
