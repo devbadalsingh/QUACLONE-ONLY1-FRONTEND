@@ -30,10 +30,12 @@ function PendingVerification() {
         navigate(`/collection-profile/${disbursal.id}`);
     };
     const columns = [
+        { field: "leadNo", headerName: "Lead No", width: 200 },
         { field: "name", headerName: "Full Name", width: 200 },
         { field: "mobile", headerName: "Mobile", width: 150 },
         { field: "aadhaar", headerName: "Aadhaar No.", width: 150 },
         { field: "pan", headerName: "PAN No.", width: 150 },
+        { field: "loanNo", headerName: "Loan No", width: 200 },
         { field: "city", headerName: "City", width: 150 },
         { field: "state", headerName: "State", width: 150 },
         { field: "loanAmount", headerName: "Loan Amount", width: 150 },
@@ -50,31 +52,28 @@ function PendingVerification() {
             : []),
     ];
     // console.log("The pending Leads id is",pendingLeads[0].data[0].loanNo)
-    const rows = pendingLeads?.map((activeLead) => ({
-        id: activeLead?.data?.loanNo || 0,
-        name: ` ${activeLead?.data?.disbursal?.sanction?.application?.lead?.fName}  ${activeLead?.data?.disbursal?.sanction?.application?.lead?.mName} ${activeLead?.data?.disbursal?.sanction?.application?.lead?.lName}`,
-        mobile: activeLead?.data?.disbursal?.sanction?.application?.lead
-            ?.mobile,
-        aadhaar:
-            activeLead?.data?.disbursal?.sanction?.application?.lead?.aadhaar,
-        pan: activeLead?.data?.disbursal?.sanction?.application?.lead?.pan,
-        city: activeLead?.data?.disbursal?.sanction?.application?.lead?.city,
-        state: activeLead?.data?.disbursal?.sanction?.application?.lead?.state,
-        loanAmount:
-            activeLead?.data?.disbursal?.sanction?.application?.lead
-                ?.loanAmount,
-        salary: activeLead?.data?.disbursal?.sanction?.application?.lead
-            ?.salary,
-        source: activeLead?.data?.disbursal?.sanction?.application?.lead
-            ?.source,
-        ...((activeRole === "accountExecutive" || activeRole === "admin") && {
-            disbursalHead: `${activeLead?.data?.disbursal?.disbursedBy?.fName}${
-                activeLead?.data?.disbursal?.disbursedBy?.mName
-                    ? ` ${activeLead?.data?.disbursal?.disbursedBy?.mName}`
-                    : ``
-            } ${activeLead?.data?.disbursal?.disbursedBy?.lName}`,
-        }),
-    }));
+    const rows = pendingLeads?.map((activeLead) => {
+        const { lead, camDetails, data, disbursedBy } = activeLead;
+        return {
+            id: data?.loanNo,
+            leadNo: data?.leadNo,
+            name: ` ${lead?.fName}  ${lead?.mName} ${lead?.lName}`,
+            mobile: lead?.mobile,
+            aadhaar: lead?.aadhaar,
+            pan: lead?.pan,
+            loanNo: data?.loanNo,
+            city: lead?.city,
+            state: lead?.state,
+            loanAmount: camDetails?.loanRecommended,
+            salary: camDetails?.salary,
+            source: lead?.source,
+            ...((activeRole === "collectionHead" || activeRole === "admin") && {
+                disbursalHead: `${disbursedBy?.fName}${
+                    disbursedBy?.lName ? ` ${disbursedBy?.lName}` : ``
+                }`,
+            }),
+        };
+    });
 
     useEffect(() => {
         refetch({
@@ -121,7 +120,11 @@ function PendingVerification() {
                         paginationModel={paginationModel}
                         paginationMode="server"
                         onPaginationModelChange={handlePageChange}
-                        onRowClick={(params) => activeRole === "accountExecutive" ? handleLeadClick(params) : null}
+                        onRowClick={(params) =>
+                            activeRole === "accountExecutive"
+                                ? handleLeadClick(params)
+                                : null
+                        }
                         sx={{
                             color: "#1F2A40", // Default text color for rows
                             "& .MuiDataGrid-columnHeaders": {

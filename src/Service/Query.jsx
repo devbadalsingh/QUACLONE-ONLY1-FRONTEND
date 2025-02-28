@@ -251,12 +251,10 @@ export const {
     useLazyGetPanDetailsQuery,
     useRejectLeadMutation,
     useLazyFetchCibilScoreQuery,
+    useLazyGetBanksQuery,
     useFetchAllRejectedLeadsQuery,
     useGetLeadTotalRecordsQuery,
     useGetTotalRecordsForSupervisorQuery,
     useLazyGenerateAadhaarLinkQuery,
     useLazyCheckDetailsQuery,
-    useLazyGetBanksQuery
 } = leadsApi;
-
-

@@ -609,12 +609,12 @@ const UploadDocuments = ({ leadData }) => {
     const [selectedDocuments, setSelectedDocuments] = useState([]);
     const [selectedDocType, setSelectedDocType] = useState(null);
     const [fileInputs, setFileInputs] = useState([{ file: null, remarks: "" }]);
-    const [bankInputs, setBankInputs] = useState({
-        bankCode: "",
-        accountNo: "",
-        accountType: "",
-    });
-    const [banks, setBanks] = useState([]);
+    // const [bankInputs, setBankInputs] = useState({
+    //     bankCode: "",
+    //     accountNo: "",
+    //     accountType: "",
+    // });
+    // const [banks, setBanks] = useState([]);
     const [selectedBank, setSelectedBank] = useState("");
     const [documents, setDocuments] = useState({
         aadhaarFront: null,
@@ -634,10 +634,10 @@ const UploadDocuments = ({ leadData }) => {
         },
     ] = useUploadDocumentsMutation();
 
-    const [
-        getBanks,
-        { data: banksData, isSuccess, isLoading: banksLoading, isError, error },
-    ] = useLazyGetBanksQuery();
+    // const [
+    //     getBanks,
+    //     { data: banksData, isSuccess, isLoading: banksLoading, isError, error },
+    // ] = useLazyGetBanksQuery();
 
     // Handle file selection
     const handleFileChange = (index, event) => {
@@ -669,10 +669,10 @@ const UploadDocuments = ({ leadData }) => {
         }));
     };
 
-    const handleBankChange = (e, newValue) => {
-        setSelectedBank(newValue.bankName);
-        setBankInputs((prev) => ({ ...prev, bankCode: newValue.code }));
-    };
+    // const handleBankChange = (e, newValue) => {
+    //     setSelectedBank(newValue.bankName);
+    //     setBankInputs((prev) => ({ ...prev, bankCode: newValue.code }));
+    // };
 
     // Add new file input
     const handleAddFileInput = () => {
@@ -702,19 +702,19 @@ const UploadDocuments = ({ leadData }) => {
             setSelectedDocType(key);
         }
 
-        if (key === "bankStatement") {
-            // Call API
-            await getBanks();
-        }
+        // if (key === "bankStatement") {
+        //     // Call API
+        //     await getBanks();
+        // }
     };
 
-    const handleAccountNoChange = (e) => {
-        setBankInputs((prev) => ({ ...prev, accountNo: e.target.value }));
-    };
+    // const handleAccountNoChange = (e) => {
+    //     setBankInputs((prev) => ({ ...prev, accountNo: e.target.value }));
+    // };
 
-    const handleAccountTypeChange = (e) => {
-        setBankInputs((prev) => ({ ...prev, accountType: e.target.value }));
-    };
+    // const handleAccountTypeChange = (e) => {
+    //     setBankInputs((prev) => ({ ...prev, accountType: e.target.value }));
+    // };
 
     const handleSubmit = async () => {
         const hasFileSelected = fileInputs.some((input) => input.file);
@@ -735,12 +735,12 @@ const UploadDocuments = ({ leadData }) => {
             if (input.file) {
                 formData.append(`${selectedDocType}`, input.file); // Append file to formData
                 formData.append(`remarks`, input.remarks); // Append remarks to formData
-                if (selectedDocType === "bankStatement") {
-                    console.log(bankInputs.bankCode);
-                    formData.append(`bankCode`, bankInputs.bankCode);
-                    formData.append(`accountNo`, bankInputs.accountNo);
-                    formData.append(`accountType`, bankInputs.accountType);
-                }
+                // if (selectedDocType === "bankStatement") {
+                //     console.log(bankInputs.bankCode);
+                //     formData.append(`bankCode`, bankInputs.bankCode);
+                //     formData.append(`accountNo`, bankInputs.accountNo);
+                //     formData.append(`accountType`, bankInputs.accountType);
+                // }
             }
         });
 
@@ -776,11 +776,11 @@ const UploadDocuments = ({ leadData }) => {
         }
     };
 
-    useEffect(() => {
-        if (isSuccess && banksData) {
-            setBanks(banksData);
-        }
-    }, [isSuccess, banksData]);
+    // useEffect(() => {
+    //     if (isSuccess && banksData) {
+    //         setBanks(banksData);
+    //     }
+    // }, [isSuccess, banksData]);
 
     useEffect(() => {
         if (docSuccess) {
@@ -1019,7 +1019,7 @@ const UploadDocuments = ({ leadData }) => {
                                         </Box>
                                     ))}
                                 </Box>
-                                {selectedDocType === "bankStatement" && (
+                                {/* {selectedDocType === "bankStatement" && (
                                     <>
                                         <Autocomplete
                                             disablePortal
@@ -1103,7 +1103,7 @@ const UploadDocuments = ({ leadData }) => {
                                             required
                                         />
                                     </>
-                                )}
+                                )} */}
                                 <Button
                                     onClick={handleSubmit}
                                     disabled={isLoading}

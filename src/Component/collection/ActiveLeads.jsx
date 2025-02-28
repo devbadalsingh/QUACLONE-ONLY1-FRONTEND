@@ -28,10 +28,12 @@ const ActiveLeads = () => {
         navigate(`/collection-profile/${disbursal.id}`);
     };
     const columns = [
+        { field: "leadNo", headerName: "Lead No", width: 200 },
         { field: "name", headerName: "Full Name", width: 200 },
         { field: "mobile", headerName: "Mobile", width: 150 },
         { field: "aadhaar", headerName: "Aadhaar No.", width: 150 },
         { field: "pan", headerName: "PAN No.", width: 150 },
+        { field: "loanNo", headerName: "Loan No", width: 200 },
         { field: "city", headerName: "City", width: 150 },
         { field: "state", headerName: "State", width: 150 },
         { field: "loanAmount", headerName: "Loan Amount", width: 150 },
@@ -49,24 +51,24 @@ const ActiveLeads = () => {
     ];
 
     const rows = activeLeads?.map((activeLead) => {
-        const { lead } = activeLead?.data?.disbursal?.sanction?.application;
+        const { lead, camDetails, data, disbursedBy } = activeLead;
         return {
-            id: activeLead?.data?.loanNo,
+            id: data?.loanNo,
+            leadNo: data?.leadNo,
             name: ` ${lead?.fName}  ${lead?.mName} ${lead?.lName}`,
             mobile: lead?.mobile,
             aadhaar: lead?.aadhaar,
             pan: lead?.pan,
+            loanNo: data?.loanNo,
             city: lead?.city,
             state: lead?.state,
-            loanAmount: lead?.loanAmount,
-            salary: lead?.salary,
+            loanAmount: camDetails?.loanRecommended,
+            salary: camDetails?.salary,
             source: lead?.source,
             ...((activeRole === "collectionHead" || activeRole === "admin") && {
-                disbursalHead: `${active?.data?.disbursal?.disbursedBy?.fName}${
-                    active?.data?.disbursal?.disbursedBy?.mName
-                        ? ` ${active?.data?.disbursal?.disbursedBy?.mName}`
-                        : ``
-                } ${active?.data?.disbursal?.disbursedBy?.lName}`,
+                disbursalHead: `${disbursedBy?.fName}${
+                    disbursedBy?.lName ? ` ${disbursedBy?.lName}` : ``
+                }`,
             }),
         };
     });
@@ -79,7 +81,6 @@ const ActiveLeads = () => {
     }, [paginationModel]);
 
     useEffect(() => {
-        console.log("data", data);
         if (data) {
             setActiveLeads(data.activeLeads);
             setTotalActiveLeads(data?.totalActiveLeads);

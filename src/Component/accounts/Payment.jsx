@@ -15,7 +15,10 @@ import { Select, MenuItem, Button } from "@mui/material";
 import Swal from "sweetalert2";
 
 const PaymentRow = ({ payment, onUpdateStatus }) => {
-    const [selectedStatus, setSelectedStatus] = useState("");
+    const [selectedStatus, setSelectedStatus] = useState({
+        utr: "",
+        status: "",
+    });
 
     const formatCamelCaseToTitle = (text) => {
         return text
@@ -36,63 +39,169 @@ const PaymentRow = ({ payment, onUpdateStatus }) => {
         );
     };
 
-    const handleStatusChange = (event) => {
-        setSelectedStatus(event.target.value);
+    const handleStatusChange = (event, utr) => {
+        setSelectedStatus((prev) => ({
+            ...prev,
+            utr: utr,
+            status: event.target.value,
+        }));
     };
+
+    console.log("selected status", selectedStatus);
 
     const handleSubmit = () => {
         if (selectedStatus) {
-            onUpdateStatus(payment.utr, selectedStatus); // Pass UTR and new status to parent
+            onUpdateStatus(selectedStatus); // Pass UTR and new status to parent
         }
     };
 
+    console.log("partial paymentttttt", payment);
 
     return (
-        <tr>
-            <td>{payment.date ? formatDateToIST(payment.date) : "N/A"}</td>
-            <td>{payment.amount || "N/A"}</td>
-            <td>{payment.isPartlyPaid ? "Verified" : "Pending"}</td>
-            <td>{payment.utr || "N/A"}</td>
-            <td>
-                {payment.requestedStatus
-                    ? formatCamelCaseToTitle(payment.requestedStatus)
-                    : "N/A"}
-            </td>
-            {!payment.isPartlyPaid &&
-                <>
+        <>
+            {payment.requestedStatus && (
+                <tr>
                     <td>
-                        <Select
-                            value={selectedStatus}
-                            onChange={handleStatusChange}
-                            displayEmpty
-                            fullWidth
-                            size="small"
-                        >
-                            <MenuItem value="" disabled>
-                                Select Status
-                            </MenuItem>
+                        {payment.date ? formatDateToIST(payment.date) : "N/A"}
+                    </td>
+                    <td>{payment.amount}</td>
+                    <td>{payment.isClosed ? "Verified" : "Pending"}</td>
+                    <td>{payment.utr || "N/A"}</td>
+                    <td>
+                        {payment.requestedStatus
+                            ? formatCamelCaseToTitle(payment.requestedStatus)
+                            : "N/A"}
+                    </td>
+                    {!payment.isClosed && (
+                        <>
+                            <td>
+                                <Select
+                                    value={
+                                        selectedStatus.utr === payment.utr
+                                            ? selectedStatus.status
+                                            : ""
+                                    }
+                                    onChange={(event) =>
+                                        handleStatusChange(event, payment.utr)
+                                    }
+                                    displayEmpty
+                                    fullWidth
+                                    size="small"
+                                >
+                                    <MenuItem value="" disabled>
+                                        Select Status
+                                    </MenuItem>
 
-                            <MenuItem value={payment.requestedStatus}>
-                                {payment.requestedStatus
-                                    ? formatCamelCaseToTitle(payment.requestedStatus)
+                                    <MenuItem value={payment.requestedStatus}>
+                                        {payment.requestedStatus
+                                            ? formatCamelCaseToTitle(
+                                                  payment.requestedStatus
+                                              )
+                                            : "N/A"}
+                                    </MenuItem>
+                                </Select>
+                            </td>
+                            <td>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    onClick={handleSubmit}
+                                    disabled={!selectedStatus}
+                                >
+                                    Update
+                                </Button>
+                            </td>
+                        </>
+                    )}
+                </tr>
+            )}
+            {payment.partialPaid.map((payments, index) =>
+                !payments.isPartlyPaid ? (
+                    <tr>
+                        <>
+                            <td>
+                                {payments.date
+                                    ? formatDateToIST(payments.date)
                                     : "N/A"}
-                            </MenuItem>
-                        </Select>
-                    </td>
-                    <td>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
-                            onClick={handleSubmit}
-                            disabled={!selectedStatus}
-                        >
-                            Update
-                        </Button>
-                    </td>
-                </>
-            }
-        </tr>
+                            </td>
+                            <td>{payments.amount || "N/A"}</td>
+                            <td>
+                                {payments.isClosed ? "Verified" : "Pending"}
+                            </td>
+                            <td>{payments.utr || "N/A"}</td>
+                            <td>
+                                {payments.requestedStatus
+                                    ? formatCamelCaseToTitle(
+                                          payments.requestedStatus
+                                      )
+                                    : "N/A"}
+                            </td>
+                            <td index={index}>
+                                <Select
+                                    value={
+                                        selectedStatus.utr === payments.utr
+                                            ? selectedStatus.status
+                                            : ""
+                                    }
+                                    onChange={(event) =>
+                                        handleStatusChange(event, payments.utr)
+                                    }
+                                    displayEmpty
+                                    fullWidth
+                                    size="small"
+                                >
+                                    <MenuItem value="" disabled>
+                                        Select Status
+                                    </MenuItem>
+
+                                    <MenuItem value={payments.requestedStatus}>
+                                        {payments.requestedStatus
+                                            ? formatCamelCaseToTitle(
+                                                  payments.requestedStatus
+                                              )
+                                            : "N/A"}
+                                    </MenuItem>
+                                </Select>
+                            </td>
+                            <td>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    onClick={handleSubmit}
+                                    disabled={!selectedStatus}
+                                >
+                                    Update
+                                </Button>
+                            </td>
+                        </>
+                    </tr>
+                ) : (
+                    <>
+                        <tr>
+                            <td>
+                                {payments.date
+                                    ? formatDateToIST(payments.date)
+                                    : "N/A"}
+                            </td>
+                            <td>{payments.amount || "N/A"}</td>
+                            <td>
+                                {payments.isPartlyPaid ? "Verified" : "Pending"}
+                            </td>
+                            <td>{payments.utr || "N/A"}</td>
+                            <td>
+                                {payments.requestedStatus
+                                    ? formatCamelCaseToTitle(
+                                          payments.requestedStatus
+                                      )
+                                    : "N/A"}
+                            </td>
+                        </tr>
+                    </>
+                )
+            )}
+        </>
     );
 };
 
@@ -104,21 +213,25 @@ const Payment = ({ collectionData, leadId, activeRole }) => {
     const [verifyPendingLead, isLoading, isSuccess, isError] =
         useVerifyPendingLeadMutation();
 
-    console.log(collectionData);
-
-    const paymentInfo =
+    const previousPayments =
         collectionData.partialPaid.length > 0
             ? collectionData.partialPaid
             : collectionData;
 
+    const paymentInfo = collectionData.partialPaid.some(
+        (item) => !item.isPartlyPaid
+    )
+        ? collectionData.partialPaid
+        : collectionData;
+
     console.log(paymentInfo);
 
-    const handleUpdateStatus = async (utr, newStatus) => {
+    const handleUpdateStatus = async (newStatus) => {
         try {
             const response = await verifyPendingLead({
                 loanNo: collectionData.loanNo, // ID of the CAM (assuming this is passed as a prop)
-                utr: utr,
-                status: newStatus, // The updated data from the form
+                utr: newStatus.utr,
+                status: newStatus.status, // The updated data from the form
             }).unwrap();
 
             if (response?.success) {
@@ -160,18 +273,10 @@ const Payment = ({ collectionData, leadId, activeRole }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {paymentInfo.length > 0 ? (
-                        paymentInfo.map((payment, index) => (
-                            <PaymentRow
-                                key={index}
-                                payment={payment}
-                                onUpdateStatus={handleUpdateStatus}
-                            />
-                        ))
-                    ) : paymentInfo ? (
+                    {collectionData ? (
                         <PaymentRow
                             key={1}
-                            payment={paymentInfo}
+                            payment={collectionData}
                             onUpdateStatus={handleUpdateStatus}
                         />
                     ) : (
@@ -184,6 +289,32 @@ const Payment = ({ collectionData, leadId, activeRole }) => {
                         </TableRow>
                     )}
                 </TableBody>
+
+                {/* <TableBody>
+                    {previousPayments.length > 0 ? (
+                        previousPayments.map((payment, index) => (
+                            <PaymentRow
+                                key={index}
+                                payment={payment}
+                                onUpdateStatus={handleUpdateStatus}
+                            />
+                        ))
+                    ) : previousPayments ? (
+                        <PaymentRow
+                            key={1}
+                            payment={previousPayments}
+                            onUpdateStatus={handleUpdateStatus}
+                        />
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={7}>
+                                <Alert severity="info">
+                                    No payment data available.
+                                </Alert>
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody> */}
             </Table>
         </Paper>
     );
